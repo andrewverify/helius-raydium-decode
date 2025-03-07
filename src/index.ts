@@ -4,15 +4,15 @@ import Websocket from 'ws'
 
 const main = async function () {
     const payload = {
-        jsonrpc: '2.0',
-        id: 1,
-        method: 'programSubscribe',
-        params: [
-            'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK',
-            {
-                encoding: 'base64',
-            },
-        ],
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "programSubscribe",
+      "params": [
+        "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+        {
+          "encoding": "jsonParsed"
+        }
+      ]
     }
 
     const ws = new Websocket(

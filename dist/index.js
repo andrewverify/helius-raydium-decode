@@ -7,15 +7,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = __importDefault(require("ws"));
 const main = async function () {
     const payload = {
-        jsonrpc: '2.0',
-        id: 1,
-        method: 'programSubscribe',
-        params: [
-            'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK',
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "programSubscribe",
+        "params": [
+            "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
             {
-                encoding: 'base64',
-            },
-        ],
+                "encoding": "jsonParsed"
+            }
+        ]
     };
     const ws = new ws_1.default('wss://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde');
     ws.onopen = () => {
