@@ -5,33 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = __importDefault(require("ws"));
+const amm_1 = __importDefault(require("./parsers/amm"));
+const web3_js_1 = require("@solana/web3.js");
 const main = async function () {
-    const payload = {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "programSubscribe",
-        "params": [
-            "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
-            {
-                "encoding": "jsonParsed"
-            }
-        ]
-    };
-    const ws = new ws_1.default('wss://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde');
-    ws.onopen = () => {
-        console.log('WebSocket connection established');
-        //send a request to get the current epoch height
-        ws.send(JSON.stringify(payload));
-    };
-    ws.onmessage = (event) => {
-        console.log(event.data);
-    };
-    ws.onerror = (error) => {
-        console.error(`WebSocket error: ${JSON.stringify(error)}`);
-    };
-    ws.onclose = () => {
-        console.log('WebSocket connection closed');
-    };
+    const ammConnection = new ws_1.default("wss://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde");
+    const rpcConnection = new web3_js_1.Connection("https://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde");
+    const amm = new amm_1.default(ammConnection, rpcConnection);
+    await amm.initialize();
 };
 main()
     .then((value) => console.log(value))
