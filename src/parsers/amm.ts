@@ -1,4 +1,7 @@
 import { Connection } from "@solana/web3.js";
+import { BorshCoder, BorshInstructionCoder, Idl } from "@coral-xyz/anchor";
+import IDL from "./idl.json";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 export default class Amm {
   private ws;
@@ -40,23 +43,27 @@ export default class Amm {
           //get tx signature
           const signature: string =
             notificationObject.params.result.value.signature;
-          console.log(`Signature: ${signature}`);
+          console.log(`TXID: ${signature}`);
           const fullTx = await this.rpc.getTransaction(signature, {
             maxSupportedTransactionVersion: 0,
           });
           if (fullTx && fullTx.meta) {
-            console.dir(fullTx.transaction.message, {
-              depth: null,
-            });
+           
             fullTx.transaction.message.compiledInstructions.forEach(
               (instruction) => {
                 //21 addresses = create instruction
                 if (instruction.accountKeyIndexes.length == 21) {
                   //address with the index == token
                   const tokenIndex = instruction.accountKeyIndexes[8];
+                  console.log("Market: AMMV4")
                   console.log(
-                    `Token: ${fullTx.transaction.message.staticAccountKeys[tokenIndex].toBase58()}`
+                    `Mint Token: ${fullTx.transaction.message.staticAccountKeys[tokenIndex].toBase58()}`
                   );
+                  console.log(`Base token: ${fullTx.transaction.message.staticAccountKeys[instruction.accountKeyIndexes[9]].toBase58()}`, )
+                  
+
+
+                  
                 }
               }
             );

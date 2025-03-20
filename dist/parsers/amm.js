@@ -1,5 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const anchor_1 = require("@coral-xyz/anchor");
+const idl_json_1 = __importDefault(require("./idl.json"));
+const bytes_1 = require("@coral-xyz/anchor/dist/cjs/utils/bytes");
 class Amm {
     constructor(websocket, rpc) {
         this.ws = websocket;
@@ -33,20 +39,26 @@ class Amm {
                     const notificationObject = JSON.parse(notificationString);
                     //get tx signature
                     const signature = notificationObject.params.result.value.signature;
-                    console.log(`Signature: ${signature}`);
+                    console.log(`TXID: ${signature}`);
                     const fullTx = await this.rpc.getTransaction(signature, {
                         maxSupportedTransactionVersion: 0,
                     });
                     if (fullTx && fullTx.meta) {
-                        console.dir(fullTx.transaction.message, {
-                            depth: null,
-                        });
                         fullTx.transaction.message.compiledInstructions.forEach((instruction) => {
                             //21 addresses = create instruction
                             if (instruction.accountKeyIndexes.length == 21) {
                                 //address with the index == token
                                 const tokenIndex = instruction.accountKeyIndexes[8];
-                                console.log(`Token: ${fullTx.transaction.message.staticAccountKeys[tokenIndex].toBase58()}`);
+                                console.log("Market: AMMV4");
+                                console.log(`Mint Token: ${fullTx.transaction.message.staticAccountKeys[tokenIndex].toBase58()}`);
+                                console.log(`Base token: ${fullTx.transaction.message.staticAccountKeys[instruction.accountKeyIndexes[9]].toBase58()}`);
+                                let coder = new anchor_1.BorshCoder(idl_json_1.default);
+                                console.dir(fullTx.meta?.innerInstructions, { depth: null });
+                                fullTx.meta?.innerInstructions?.forEach((ins) => {
+                                    ins.instructions.forEach((oneinst) => {
+                                        console.log(coder.instruction.decode(bytes_1.bs58.decode(oneinst.data)));
+                                    });
+                                });
                             }
                         });
                     }
