@@ -3,15 +3,17 @@
 import Websocket from "ws";
 import Amm from "./parsers/amm";
 import { Connection } from "@solana/web3.js";
+import Cpmm from "./parsers/cpmm";
+import Clmm from "./parsers/clmm";
 
-const main = async function () {
+const main = async function() {
   const ammConnection = new Websocket(
     "wss://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde"
   );
   const rpcConnection = new Connection(
     "https://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde"
   );
-  const amm = new Amm(ammConnection, rpcConnection);
+  const amm = new Clmm(ammConnection, rpcConnection);
   await amm.initialize();
 };
 

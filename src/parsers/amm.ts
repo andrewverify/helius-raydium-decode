@@ -1,7 +1,7 @@
 import { Connection } from "@solana/web3.js";
-import { BorshCoder, BorshInstructionCoder, Idl } from "@coral-xyz/anchor";
-import IDL from "./idl.json";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { deserialize } from "borsh";
+import { addLiquidityLayout } from "./types";
+import aura from "../aura";
 
 export default class Amm {
   private ws;
@@ -48,22 +48,55 @@ export default class Amm {
             maxSupportedTransactionVersion: 0,
           });
           if (fullTx && fullTx.meta) {
-           
             fullTx.transaction.message.compiledInstructions.forEach(
-              (instruction) => {
+              async (instruction) => {
                 //21 addresses = create instruction
                 if (instruction.accountKeyIndexes.length == 21) {
                   //address with the index == token
                   const tokenIndex = instruction.accountKeyIndexes[8];
-                  console.log("Market: AMMV4")
-                  console.log(
-                    `Mint Token: ${fullTx.transaction.message.staticAccountKeys[tokenIndex].toBase58()}`
+
+                  const mintToken =
+                    fullTx.transaction.message.staticAccountKeys[
+                      tokenIndex
+                    ].toBase58();
+                  const baseToken =
+                    fullTx.transaction.message.staticAccountKeys[
+                      instruction.accountKeyIndexes[9]
+                    ].toBase58();
+                  console.log(`Mint Token: ${mintToken}`);
+                  console.log(`Mint name:`, await aura(mintToken));
+                  console.log(`Base token: ${baseToken}`);
+
+                  const parsedAddLiquidityParams = deserialize(
+                    addLiquidityLayout,
+                    instruction.data
                   );
-                  console.log(`Base token: ${fullTx.transaction.message.staticAccountKeys[instruction.accountKeyIndexes[9]].toBase58()}`, )
-                  
+                  if (parsedAddLiquidityParams) {
+                    console.log(
+                      "Open Time:",
+                      parsedAddLiquidityParams["openTime"],
+                      new Date(
+                        Number(
+                          (
+                            parsedAddLiquidityParams["openTime"] * 1000n
+                          ).toString()
+                        )
+                      )
+                    );
+                    console.log(
+                      "Initial Base Token Amount:",
+                      parsedAddLiquidityParams["initPcAmount"]
+                    );
+                    console.log(
+                      "Initial Mint Token Amount:",
+                      parsedAddLiquidityParams["initCoinAmount"]
+                    );
+                    console.log(
+                      "Market:",
 
-
-                  
+                      mintToken.includes("pump") ? "AMMV4" : "CPMM"
+                    );
+                  }
                 }
               }
             );

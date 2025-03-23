@@ -5,12 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = __importDefault(require("ws"));
-const amm_1 = __importDefault(require("./parsers/amm"));
 const web3_js_1 = require("@solana/web3.js");
+const clmm_1 = __importDefault(require("./parsers/clmm"));
 const main = async function () {
     const ammConnection = new ws_1.default("wss://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde");
     const rpcConnection = new web3_js_1.Connection("https://mainnet.helius-rpc.com/?api-key=14734112-cfa3-409e-81d6-3192bdbadbde");
-    const amm = new amm_1.default(ammConnection, rpcConnection);
+    const amm = new clmm_1.default(ammConnection, rpcConnection);
     await amm.initialize();
 };
 main()
